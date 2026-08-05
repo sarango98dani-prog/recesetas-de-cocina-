@@ -8,6 +8,7 @@ import com.recetario.app.RecetarioApplication
 import com.recetario.app.data.remote.RetrofitInstance
 import com.recetario.app.data.repository.RecipeRepository
 import com.recetario.app.data.repository.UserPreferencesRepository
+import com.recetario.app.domain.usecase.AddToFavoritesUseCase
 import com.recetario.app.domain.usecase.DeleteRecipeUseCase
 import com.recetario.app.domain.usecase.GetRecipeByIdUseCase
 import com.recetario.app.domain.usecase.GetSavedRecipesUseCase
@@ -32,7 +33,7 @@ object AppViewModelProvider {
             val repository = recipeRepository()
             RecipeListViewModel(
                 searchRecipesUseCase = SearchRecipesUseCase(repository),
-                saveRecipeUseCase = SaveRecipeUseCase(repository)
+                addToFavoritesUseCase = AddToFavoritesUseCase(repository)
             )
         }
     }

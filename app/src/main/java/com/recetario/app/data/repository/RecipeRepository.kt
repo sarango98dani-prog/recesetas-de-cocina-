@@ -6,6 +6,7 @@ import com.recetario.app.data.remote.MealApiService
 import com.recetario.app.data.remote.toDomain
 import com.recetario.app.domain.model.Recipe
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class RecipeRepository(
@@ -23,6 +24,14 @@ class RecipeRepository(
 
     fun getRecipeById(id: String): Flow<Recipe?> =
         dao.getById(id).map { it?.toDomain() }
+
+    // Solo inserta si no existía: evita pisar notas/foto ya guardadas al re-tocar
+    // un resultado de búsqueda que ya es favorito.
+    suspend fun saveNewRecipe(recipe: Recipe) {
+        if (dao.getById(recipe.id).first() == null) {
+            dao.upsert(recipe.toEntity())
+        }
+    }
 
     suspend fun saveRecipe(recipe: Recipe) {
         dao.upsert(recipe.toEntity())
