@@ -2,22 +2,24 @@ package com.recetario.app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.recetario.app.data.local.RecipeDao
+import com.recetario.app.domain.usecase.GetRecipeByIdUseCase
+import com.recetario.app.domain.usecase.SaveRecipeUseCase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class RecipeDetailViewModel(
-    private val dao: RecipeDao,
-    mealId: String
+    getRecipeByIdUseCase: GetRecipeByIdUseCase,
+    private val saveRecipeUseCase: SaveRecipeUseCase,
+    recipeId: String
 ) : ViewModel() {
 
-    val recipe = dao.getById(mealId)
+    val recipe = getRecipeByIdUseCase(recipeId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     fun updateNotes(notes: String) {
         val current = recipe.value ?: return
-        viewModelScope.launch { dao.upsert(current.copy(notes = notes)) }
+        viewModelScope.launch { saveRecipeUseCase(current.copy(notes = notes)) }
     }
 }

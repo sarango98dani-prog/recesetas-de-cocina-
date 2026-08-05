@@ -5,27 +5,77 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.recetario.app.RecetarioApplication
+import com.recetario.app.data.remote.RetrofitInstance
+import com.recetario.app.data.repository.RecipeRepository
+import com.recetario.app.data.repository.UserPreferencesRepository
+import com.recetario.app.domain.usecase.DeleteRecipeUseCase
+import com.recetario.app.domain.usecase.GetRecipeByIdUseCase
+import com.recetario.app.domain.usecase.GetSavedRecipesUseCase
+import com.recetario.app.domain.usecase.GetUnitSystemUseCase
+import com.recetario.app.domain.usecase.SaveRecipeUseCase
+import com.recetario.app.domain.usecase.SearchRecipesUseCase
+import com.recetario.app.domain.usecase.SetUnitSystemUseCase
 
 private fun CreationExtras.recetarioApplication(): RecetarioApplication =
     this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as RecetarioApplication
+
+private fun CreationExtras.recipeRepository(): RecipeRepository =
+    RecipeRepository(
+        dao = recetarioApplication().database.recipeDao(),
+        api = RetrofitInstance.mealApiService
+    )
 
 object AppViewModelProvider {
 
     val RecipeListFactory = viewModelFactory {
         initializer {
-            RecipeListViewModel(recetarioApplication().database.recipeDao())
+            val repository = recipeRepository()
+            RecipeListViewModel(
+                searchRecipesUseCase = SearchRecipesUseCase(repository),
+                saveRecipeUseCase = SaveRecipeUseCase(repository)
+            )
+        }
+    }
+
+    val FavoritesFactory = viewModelFactory {
+        initializer {
+            val repository = recipeRepository()
+            FavoritesViewModel(
+                getSavedRecipesUseCase = GetSavedRecipesUseCase(repository),
+                deleteRecipeUseCase = DeleteRecipeUseCase(repository)
+            )
         }
     }
 
     val SettingsFactory = viewModelFactory {
         initializer {
-            SettingsViewModel(recetarioApplication().userPreferences)
+            val repository = UserPreferencesRepository(recetarioApplication().userPreferences)
+            SettingsViewModel(
+                getUnitSystemUseCase = GetUnitSystemUseCase(repository),
+                setUnitSystemUseCase = SetUnitSystemUseCase(repository)
+            )
         }
     }
 
     fun detailFactory(mealId: String) = viewModelFactory {
         initializer {
-            RecipeDetailViewModel(recetarioApplication().database.recipeDao(), mealId)
+            val repository = recipeRepository()
+            RecipeDetailViewModel(
+                getRecipeByIdUseCase = GetRecipeByIdUseCase(repository),
+                saveRecipeUseCase = SaveRecipeUseCase(repository),
+                recipeId = mealId
+            )
+        }
+    }
+
+    fun cameraFactory(mealId: String) = viewModelFactory {
+        initializer {
+            val repository = recipeRepository()
+            CameraViewModel(
+                getRecipeByIdUseCase = GetRecipeByIdUseCase(repository),
+                saveRecipeUseCase = SaveRecipeUseCase(repository),
+                recipeId = mealId
+            )
         }
     }
 }

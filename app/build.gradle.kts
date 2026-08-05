@@ -66,6 +66,11 @@ dependencies {
 
     implementation(libs.coil.compose)
 
+    implementation(libs.camera.core)
+    implementation(libs.camera.camera2)
+    implementation(libs.camera.lifecycle)
+    implementation(libs.camera.view)
+
     implementation(libs.kotlinx.coroutines.android)
 
     debugImplementation(libs.ui.tooling)

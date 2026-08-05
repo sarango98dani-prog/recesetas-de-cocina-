@@ -1,4 +1,4 @@
-package com.recetario.app.data.datastore
+package com.recetario.app.domain.model
 
 enum class UnitSystem {
     METRIC,

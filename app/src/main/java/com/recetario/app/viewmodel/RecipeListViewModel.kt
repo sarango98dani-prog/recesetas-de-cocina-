@@ -2,36 +2,46 @@ package com.recetario.app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.recetario.app.data.local.RecipeDao
-import com.recetario.app.data.local.RecipeEntity
-import kotlinx.coroutines.flow.SharingStarted
+import com.recetario.app.domain.model.Recipe
+import com.recetario.app.domain.usecase.SaveRecipeUseCase
+import com.recetario.app.domain.usecase.SearchRecipesUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.UUID
+import retrofit2.HttpException
+import java.io.IOException
 
-class RecipeListViewModel(private val dao: RecipeDao) : ViewModel() {
+sealed interface RecipeListUiState {
+    data object Loading : RecipeListUiState
+    data class Success(val recipes: List<Recipe>) : RecipeListUiState
+    data class Error(val message: String) : RecipeListUiState
+}
 
-    val recipes: StateFlow<List<RecipeEntity>> = dao.getAll()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+class RecipeListViewModel(
+    private val searchRecipesUseCase: SearchRecipesUseCase,
+    private val saveRecipeUseCase: SaveRecipeUseCase
+) : ViewModel() {
 
-    // TODO(Semana 2): reemplazar por resultados de búsqueda vía Retrofit + Repository.
-    fun addSampleRecipe(name: String) {
-        if (name.isBlank()) return
+    private val _uiState = MutableStateFlow<RecipeListUiState>(RecipeListUiState.Success(emptyList()))
+    val uiState: StateFlow<RecipeListUiState> = _uiState.asStateFlow()
+
+    fun search(query: String) {
+        if (query.isBlank()) return
         viewModelScope.launch {
-            dao.upsert(
-                RecipeEntity(
-                    mealId = UUID.randomUUID().toString(),
-                    name = name,
-                    thumbnailUrl = "",
-                    category = "Sin categoría",
-                    area = "Desconocida"
-                )
-            )
+            _uiState.value = RecipeListUiState.Loading
+            _uiState.value = try {
+                RecipeListUiState.Success(searchRecipesUseCase(query))
+            } catch (e: IOException) {
+                RecipeListUiState.Error("No hay conexión a Internet. Verificá tu red e intentá de nuevo.")
+            } catch (e: HttpException) {
+                RecipeListUiState.Error("Error del servidor (${e.code()}). Intentá más tarde.")
+            }
         }
     }
 
-    fun deleteRecipe(recipe: RecipeEntity) {
-        viewModelScope.launch { dao.delete(recipe) }
+    // Guarda la receta encontrada en Room para poder abrir su detalle y anotarle notas/foto.
+    fun saveRecipe(recipe: Recipe) {
+        viewModelScope.launch { saveRecipeUseCase(recipe) }
     }
 }

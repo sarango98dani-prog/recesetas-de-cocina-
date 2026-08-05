@@ -4,9 +4,9 @@
     <!-- Requerido para Retrofit (Semana 2) -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Se agregarán en Semana 4 junto con la solicitud de permisos en tiempo de ejecución:
-         android.permission.CAMERA
-         android.permission.ACCESS_FINE_LOCATION -->
+    <!-- Requerido para tomar la foto propia del plato (Semana 4), solicitado en tiempo de ejecución -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
         android:name=".RecetarioApplication"

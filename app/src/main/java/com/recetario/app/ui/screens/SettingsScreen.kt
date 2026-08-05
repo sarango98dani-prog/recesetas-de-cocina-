@@ -23,7 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.recetario.app.data.datastore.UnitSystem
+import com.recetario.app.domain.model.UnitSystem
 import com.recetario.app.viewmodel.AppViewModelProvider
 import com.recetario.app.viewmodel.SettingsViewModel
 
