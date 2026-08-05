@@ -17,14 +17,22 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.recetario.app.ui.components.RecetarioBottomBar
+import com.recetario.app.ui.screens.AddChefRecipeScreen
 import com.recetario.app.ui.screens.CameraScreen
+import com.recetario.app.ui.screens.ChefRecipeDetailScreen
+import com.recetario.app.ui.screens.ChefRecipesScreen
 import com.recetario.app.ui.screens.FavoritesScreen
+import com.recetario.app.ui.screens.HomeScreen
 import com.recetario.app.ui.screens.RecipeDetailScreen
 import com.recetario.app.ui.screens.RecipeListScreen
 import com.recetario.app.ui.screens.SettingsScreen
 import com.recetario.app.ui.screens.SplashScreen
 
-private val BOTTOM_BAR_ROUTES = setOf(RecetarioDestinations.RECIPE_LIST, RecetarioDestinations.FAVORITES)
+private val BOTTOM_BAR_ROUTES = setOf(
+    RecetarioDestinations.RECIPE_LIST,
+    RecetarioDestinations.CHEF_RECIPES,
+    RecetarioDestinations.FAVORITES
+)
 
 @Composable
 fun RecetarioNavGraph(navController: NavHostController = rememberNavController()) {
@@ -64,8 +72,17 @@ fun RecetarioNavGraph(navController: NavHostController = rememberNavController()
             composable(RecetarioDestinations.SPLASH) {
                 SplashScreen(
                     onFinished = {
-                        navController.navigate(RecetarioDestinations.RECIPE_LIST) {
+                        navController.navigate(RecetarioDestinations.HOME) {
                             popUpTo(RecetarioDestinations.SPLASH) { inclusive = true }
+                        }
+                    }
+                )
+            }
+            composable(RecetarioDestinations.HOME) {
+                HomeScreen(
+                    onExploreClick = {
+                        navController.navigate(RecetarioDestinations.RECIPE_LIST) {
+                            popUpTo(RecetarioDestinations.HOME) { inclusive = true }
                         }
                     }
                 )
@@ -74,6 +91,22 @@ fun RecetarioNavGraph(navController: NavHostController = rememberNavController()
                 RecipeListScreen(
                     onRecipeClick = { mealId -> navController.navigate(RecetarioDestinations.recipeDetail(mealId)) },
                     onSettingsClick = { navController.navigate(RecetarioDestinations.SETTINGS) }
+                )
+            }
+            composable(RecetarioDestinations.CHEF_RECIPES) {
+                ChefRecipesScreen(
+                    onRecipeClick = { id -> navController.navigate(RecetarioDestinations.chefRecipeDetail(id)) },
+                    onAddRecipeClick = { navController.navigate(RecetarioDestinations.ADD_CHEF_RECIPE) }
+                )
+            }
+            composable(RecetarioDestinations.CHEF_RECIPE_DETAIL) { backStackEntry ->
+                val id = backStackEntry.arguments?.getString(RecetarioDestinations.CHEF_RECIPE_ID_ARG).orEmpty()
+                ChefRecipeDetailScreen(recipeId = id, onBack = { navController.popBackStack() })
+            }
+            composable(RecetarioDestinations.ADD_CHEF_RECIPE) {
+                AddChefRecipeScreen(
+                    onBack = { navController.popBackStack() },
+                    onSaved = { navController.popBackStack() }
                 )
             }
             composable(RecetarioDestinations.FAVORITES) {

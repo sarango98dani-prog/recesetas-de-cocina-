@@ -6,16 +6,22 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.recetario.app.RecetarioApplication
 import com.recetario.app.data.remote.RetrofitInstance
+import com.recetario.app.data.repository.ChefRecipeRepository
 import com.recetario.app.data.repository.RecipeRepository
 import com.recetario.app.data.repository.UserPreferencesRepository
+import com.recetario.app.domain.usecase.AddChefRecipeUseCase
 import com.recetario.app.domain.usecase.AddToFavoritesUseCase
 import com.recetario.app.domain.usecase.DeleteRecipeUseCase
+import com.recetario.app.domain.usecase.GetChefRecipeByIdUseCase
+import com.recetario.app.domain.usecase.GetChefRecipesUseCase
 import com.recetario.app.domain.usecase.GetRecipeByIdUseCase
 import com.recetario.app.domain.usecase.GetSavedRecipesUseCase
 import com.recetario.app.domain.usecase.GetUnitSystemUseCase
 import com.recetario.app.domain.usecase.SaveRecipeUseCase
 import com.recetario.app.domain.usecase.SearchRecipesUseCase
+import com.recetario.app.domain.usecase.SeedChefRecipesUseCase
 import com.recetario.app.domain.usecase.SetUnitSystemUseCase
+import com.recetario.app.domain.usecase.ToggleChefRecipeFavoriteUseCase
 
 private fun CreationExtras.recetarioApplication(): RecetarioApplication =
     this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as RecetarioApplication
@@ -25,6 +31,9 @@ private fun CreationExtras.recipeRepository(): RecipeRepository =
         dao = recetarioApplication().database.recipeDao(),
         api = RetrofitInstance.mealApiService
     )
+
+private fun CreationExtras.chefRecipeRepository(): ChefRecipeRepository =
+    ChefRecipeRepository(dao = recetarioApplication().database.chefRecipeDao())
 
 object AppViewModelProvider {
 
@@ -76,6 +85,34 @@ object AppViewModelProvider {
                 getRecipeByIdUseCase = GetRecipeByIdUseCase(repository),
                 saveRecipeUseCase = SaveRecipeUseCase(repository),
                 recipeId = mealId
+            )
+        }
+    }
+
+    val ChefRecipesFactory = viewModelFactory {
+        initializer {
+            val repository = chefRecipeRepository()
+            ChefRecipesViewModel(
+                getChefRecipesUseCase = GetChefRecipesUseCase(repository),
+                seedChefRecipesUseCase = SeedChefRecipesUseCase(repository)
+            )
+        }
+    }
+
+    val AddChefRecipeFactory = viewModelFactory {
+        initializer {
+            val repository = chefRecipeRepository()
+            AddChefRecipeViewModel(addChefRecipeUseCase = AddChefRecipeUseCase(repository))
+        }
+    }
+
+    fun chefRecipeDetailFactory(recipeId: String) = viewModelFactory {
+        initializer {
+            val repository = chefRecipeRepository()
+            ChefRecipeDetailViewModel(
+                getChefRecipeByIdUseCase = GetChefRecipeByIdUseCase(repository),
+                toggleFavoriteUseCase = ToggleChefRecipeFavoriteUseCase(repository),
+                recipeId = recipeId
             )
         }
     }

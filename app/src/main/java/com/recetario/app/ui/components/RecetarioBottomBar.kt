@@ -1,6 +1,7 @@
 package com.recetario.app.ui.components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
@@ -22,6 +23,7 @@ private data class BottomBarDestination(
 
 private val bottomBarDestinations = listOf(
     BottomBarDestination(RecetarioDestinations.RECIPE_LIST, "Buscar", Icons.Filled.Search),
+    BottomBarDestination(RecetarioDestinations.CHEF_RECIPES, "Recetas Chef", Icons.AutoMirrored.Filled.MenuBook),
     BottomBarDestination(RecetarioDestinations.FAVORITES, "Favoritos", Icons.Filled.Favorite)
 )
 
