@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Recetario</string>
+    <string name="app_name">Recetas de la Chef Daniela Jima</string>
+    <string name="chef_name">Chef Daniela Jima</string>
+    <string name="institute_name">Instituto Tecnológico Rumiñahui</string>
+    <string name="app_tagline">Recetas de la</string>
 </resources>

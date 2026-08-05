@@ -1,5 +1,10 @@
 package com.recetario.app.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -17,6 +22,7 @@ import com.recetario.app.ui.screens.FavoritesScreen
 import com.recetario.app.ui.screens.RecipeDetailScreen
 import com.recetario.app.ui.screens.RecipeListScreen
 import com.recetario.app.ui.screens.SettingsScreen
+import com.recetario.app.ui.screens.SplashScreen
 
 private val BOTTOM_BAR_ROUTES = setOf(RecetarioDestinations.RECIPE_LIST, RecetarioDestinations.FAVORITES)
 
@@ -44,9 +50,26 @@ fun RecetarioNavGraph(navController: NavHostController = rememberNavController()
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = RecetarioDestinations.RECIPE_LIST,
-            modifier = Modifier.padding(innerPadding)
+            startDestination = RecetarioDestinations.SPLASH,
+            modifier = Modifier.padding(innerPadding),
+            enterTransition = {
+                fadeIn(animationSpec = tween(250)) + slideInHorizontally(animationSpec = tween(250)) { it / 8 }
+            },
+            exitTransition = { fadeOut(animationSpec = tween(200)) },
+            popEnterTransition = { fadeIn(animationSpec = tween(250)) },
+            popExitTransition = {
+                fadeOut(animationSpec = tween(200)) + slideOutHorizontally(animationSpec = tween(200)) { it / 8 }
+            }
         ) {
+            composable(RecetarioDestinations.SPLASH) {
+                SplashScreen(
+                    onFinished = {
+                        navController.navigate(RecetarioDestinations.RECIPE_LIST) {
+                            popUpTo(RecetarioDestinations.SPLASH) { inclusive = true }
+                        }
+                    }
+                )
+            }
             composable(RecetarioDestinations.RECIPE_LIST) {
                 RecipeListScreen(
                     onRecipeClick = { mealId -> navController.navigate(RecetarioDestinations.recipeDetail(mealId)) },

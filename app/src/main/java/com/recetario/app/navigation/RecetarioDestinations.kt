@@ -1,6 +1,7 @@
 package com.recetario.app.navigation
 
 object RecetarioDestinations {
+    const val SPLASH = "splash"
     const val RECIPE_LIST = "recipe_list"
     const val FAVORITES = "favorites"
     const val SETTINGS = "settings"
