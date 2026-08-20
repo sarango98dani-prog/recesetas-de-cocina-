@@ -22,4 +22,9 @@ class RecipeDetailViewModel(
         val current = recipe.value ?: return
         viewModelScope.launch { saveRecipeUseCase(current.copy(notes = notes)) }
     }
+
+    fun updatePhoto(photoPath: String) {
+        val current = recipe.value ?: return
+        viewModelScope.launch { saveRecipeUseCase(current.copy(photoPath = photoPath)) }
+    }
 }

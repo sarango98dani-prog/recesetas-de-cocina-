@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -27,6 +28,9 @@ import com.recetario.app.ui.screens.RecipeDetailScreen
 import com.recetario.app.ui.screens.RecipeListScreen
 import com.recetario.app.ui.screens.SettingsScreen
 import com.recetario.app.ui.screens.SplashScreen
+import com.recetario.app.viewmodel.AppViewModelProvider
+import com.recetario.app.viewmodel.CameraViewModel
+import com.recetario.app.viewmodel.ChefCameraViewModel
 
 private val BOTTOM_BAR_ROUTES = setOf(
     RecetarioDestinations.RECIPE_LIST,
@@ -101,7 +105,23 @@ fun RecetarioNavGraph(navController: NavHostController = rememberNavController()
             }
             composable(RecetarioDestinations.CHEF_RECIPE_DETAIL) { backStackEntry ->
                 val id = backStackEntry.arguments?.getString(RecetarioDestinations.CHEF_RECIPE_ID_ARG).orEmpty()
-                ChefRecipeDetailScreen(recipeId = id, onBack = { navController.popBackStack() })
+                ChefRecipeDetailScreen(
+                    recipeId = id,
+                    onBack = { navController.popBackStack() },
+                    onTakePhoto = { navController.navigate(RecetarioDestinations.cameraChef(id)) }
+                )
+            }
+            composable(RecetarioDestinations.CAMERA_CHEF) { backStackEntry ->
+                val id = backStackEntry.arguments?.getString(RecetarioDestinations.CHEF_RECIPE_ID_ARG).orEmpty()
+                val chefCameraViewModel: ChefCameraViewModel =
+                    viewModel(factory = AppViewModelProvider.chefCameraFactory(id))
+                CameraScreen(
+                    onPhotoCaptured = { path ->
+                        chefCameraViewModel.onPhotoCaptured(path)
+                        navController.popBackStack()
+                    },
+                    onBack = { navController.popBackStack() }
+                )
             }
             composable(RecetarioDestinations.ADD_CHEF_RECIPE) {
                 AddChefRecipeScreen(
@@ -125,9 +145,13 @@ fun RecetarioNavGraph(navController: NavHostController = rememberNavController()
             }
             composable(RecetarioDestinations.CAMERA) { backStackEntry ->
                 val mealId = backStackEntry.arguments?.getString(RecetarioDestinations.MEAL_ID_ARG).orEmpty()
+                val cameraViewModel: CameraViewModel =
+                    viewModel(factory = AppViewModelProvider.cameraFactory(mealId))
                 CameraScreen(
-                    mealId = mealId,
-                    onPhotoSaved = { navController.popBackStack() },
+                    onPhotoCaptured = { path ->
+                        cameraViewModel.onPhotoCaptured(path)
+                        navController.popBackStack()
+                    },
                     onBack = { navController.popBackStack() }
                 )
             }

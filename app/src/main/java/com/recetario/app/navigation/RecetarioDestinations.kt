@@ -20,7 +20,11 @@ object RecetarioDestinations {
     const val CHEF_RECIPE_ID_ARG = "chefRecipeId"
     const val CHEF_RECIPE_DETAIL = "$CHEF_RECIPE_DETAIL_ROUTE/{$CHEF_RECIPE_ID_ARG}"
 
+    private const val CAMERA_CHEF_ROUTE = "camera_chef"
+    const val CAMERA_CHEF = "$CAMERA_CHEF_ROUTE/{$CHEF_RECIPE_ID_ARG}"
+
     fun recipeDetail(mealId: String) = "$RECIPE_DETAIL_ROUTE/$mealId"
     fun camera(mealId: String) = "$CAMERA_ROUTE/$mealId"
     fun chefRecipeDetail(id: String) = "$CHEF_RECIPE_DETAIL_ROUTE/$id"
+    fun cameraChef(id: String) = "$CAMERA_CHEF_ROUTE/$id"
 }

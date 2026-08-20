@@ -112,6 +112,18 @@ object AppViewModelProvider {
             ChefRecipeDetailViewModel(
                 getChefRecipeByIdUseCase = GetChefRecipeByIdUseCase(repository),
                 toggleFavoriteUseCase = ToggleChefRecipeFavoriteUseCase(repository),
+                addChefRecipeUseCase = AddChefRecipeUseCase(repository),
+                recipeId = recipeId
+            )
+        }
+    }
+
+    fun chefCameraFactory(recipeId: String) = viewModelFactory {
+        initializer {
+            val repository = chefRecipeRepository()
+            ChefCameraViewModel(
+                getChefRecipeByIdUseCase = GetChefRecipeByIdUseCase(repository),
+                addChefRecipeUseCase = AddChefRecipeUseCase(repository),
                 recipeId = recipeId
             )
         }

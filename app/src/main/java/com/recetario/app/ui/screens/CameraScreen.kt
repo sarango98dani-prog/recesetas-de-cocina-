@@ -54,19 +54,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.recetario.app.viewmodel.AppViewModelProvider
-import com.recetario.app.viewmodel.CameraViewModel
 import java.io.File
 
 private const val TAG = "CameraScreen"
 
+// Componente de UI puro: no conoce Recipe/ChefRecipe ni repositorios. El caller
+// (RecetarioNavGraph) decide qué ViewModel persiste la ruta de la foto recibida.
 @Composable
 fun CameraScreen(
-    mealId: String,
-    onPhotoSaved: () -> Unit,
-    onBack: () -> Unit,
-    viewModel: CameraViewModel = viewModel(factory = AppViewModelProvider.cameraFactory(mealId))
+    onPhotoCaptured: (String) -> Unit,
+    onBack: () -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -165,15 +162,14 @@ fun CameraScreen(
                 .navigationBarsPadding()
                 .padding(bottom = 24.dp),
             onClick = {
-                val photoFile = File(context.filesDir, "recipe_${mealId}_${System.currentTimeMillis()}.jpg")
+                val photoFile = File(context.filesDir, "recipe_photo_${System.currentTimeMillis()}.jpg")
                 val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
                 imageCapture.takePicture(
                     outputOptions,
                     ContextCompat.getMainExecutor(context),
                     object : ImageCapture.OnImageSavedCallback {
                         override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                            viewModel.onPhotoCaptured(photoFile.absolutePath)
-                            onPhotoSaved()
+                            onPhotoCaptured(photoFile.absolutePath)
                         }
 
                         override fun onError(exception: ImageCaptureException) {
