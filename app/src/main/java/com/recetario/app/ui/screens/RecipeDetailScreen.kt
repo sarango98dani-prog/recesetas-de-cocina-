@@ -72,6 +72,7 @@ fun RecipeDetailScreen(
 ) {
     val recipe by viewModel.recipe.collectAsState()
     var notes by remember { mutableStateOf("") }
+    var notesInitialized by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -94,8 +95,16 @@ fun RecipeDetailScreen(
         }
     }
 
-    LaunchedEffect(recipe?.notes) {
-        recipe?.notes?.let { notes = it }
+    // Solo se siembra el estado local del TextField la primera vez que carga la receta:
+    // si se re-key-a en cada emisión de recipe?.notes, el propio autoguardado (que
+    // dispara una nueva emisión de Room) le pisa lo que el usuario está tipeando.
+    LaunchedEffect(recipe) {
+        if (!notesInitialized) {
+            recipe?.notes?.let {
+                notes = it
+                notesInitialized = true
+            }
+        }
     }
 
     Scaffold(

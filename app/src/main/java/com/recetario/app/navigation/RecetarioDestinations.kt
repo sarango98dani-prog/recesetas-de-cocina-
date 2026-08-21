@@ -8,6 +8,7 @@ object RecetarioDestinations {
     const val SETTINGS = "settings"
     const val CHEF_RECIPES = "chef_recipes"
     const val ADD_CHEF_RECIPE = "add_chef_recipe"
+    const val ADD_CHEF_RECIPE_CAMERA = "add_chef_recipe_camera"
 
     private const val RECIPE_DETAIL_ROUTE = "recipe_detail"
     const val MEAL_ID_ARG = "mealId"

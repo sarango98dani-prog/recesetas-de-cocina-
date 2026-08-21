@@ -12,6 +12,9 @@ interface ChefRecipeDao {
     @Query("SELECT * FROM chef_recipes ORDER BY name ASC")
     fun getAll(): Flow<List<ChefRecipeEntity>>
 
+    @Query("SELECT * FROM chef_recipes WHERE isFavorite = 1 ORDER BY name ASC")
+    fun getFavorites(): Flow<List<ChefRecipeEntity>>
+
     @Query("SELECT * FROM chef_recipes WHERE id = :id")
     fun getById(id: String): Flow<ChefRecipeEntity?>
 

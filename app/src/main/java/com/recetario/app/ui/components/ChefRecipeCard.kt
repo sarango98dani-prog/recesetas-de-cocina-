@@ -30,7 +30,12 @@ import com.recetario.app.domain.model.ChefRecipe
 import java.io.File
 
 @Composable
-fun ChefRecipeCard(recipe: ChefRecipe, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun ChefRecipeCard(
+    recipe: ChefRecipe,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    trailingAction: (@Composable () -> Unit)? = null
+) {
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
@@ -62,7 +67,15 @@ fun ChefRecipeCard(recipe: ChefRecipe, onClick: () -> Unit, modifier: Modifier =
                             .padding(36.dp)
                     )
                 }
-                if (recipe.isFavorite) {
+                if (trailingAction != null) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(8.dp)
+                    ) {
+                        trailingAction()
+                    }
+                } else if (recipe.isFavorite) {
                     Icon(
                         imageVector = Icons.Filled.Favorite,
                         contentDescription = "Favorito",

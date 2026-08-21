@@ -15,6 +15,9 @@ class ChefRecipeRepository(private val dao: ChefRecipeDao) {
     fun getAllChefRecipes(): Flow<List<ChefRecipe>> =
         dao.getAll().map { entities -> entities.map { it.toDomain() } }
 
+    fun getFavoriteChefRecipes(): Flow<List<ChefRecipe>> =
+        dao.getFavorites().map { entities -> entities.map { it.toDomain() } }
+
     fun getChefRecipeById(id: String): Flow<ChefRecipe?> =
         dao.getById(id).map { it?.toDomain() }
 

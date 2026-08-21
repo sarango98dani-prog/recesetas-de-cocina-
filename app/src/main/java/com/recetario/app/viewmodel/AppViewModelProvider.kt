@@ -14,6 +14,7 @@ import com.recetario.app.domain.usecase.AddToFavoritesUseCase
 import com.recetario.app.domain.usecase.DeleteRecipeUseCase
 import com.recetario.app.domain.usecase.GetChefRecipeByIdUseCase
 import com.recetario.app.domain.usecase.GetChefRecipesUseCase
+import com.recetario.app.domain.usecase.GetFavoriteChefRecipesUseCase
 import com.recetario.app.domain.usecase.GetRecipeByIdUseCase
 import com.recetario.app.domain.usecase.GetSavedRecipesUseCase
 import com.recetario.app.domain.usecase.GetUnitSystemUseCase
@@ -50,9 +51,12 @@ object AppViewModelProvider {
     val FavoritesFactory = viewModelFactory {
         initializer {
             val repository = recipeRepository()
+            val chefRepository = chefRecipeRepository()
             FavoritesViewModel(
                 getSavedRecipesUseCase = GetSavedRecipesUseCase(repository),
-                deleteRecipeUseCase = DeleteRecipeUseCase(repository)
+                deleteRecipeUseCase = DeleteRecipeUseCase(repository),
+                getFavoriteChefRecipesUseCase = GetFavoriteChefRecipesUseCase(chefRepository),
+                toggleChefRecipeFavoriteUseCase = ToggleChefRecipeFavoriteUseCase(chefRepository)
             )
         }
     }

@@ -8,6 +8,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -123,15 +124,35 @@ fun RecetarioNavGraph(navController: NavHostController = rememberNavController()
                     onBack = { navController.popBackStack() }
                 )
             }
-            composable(RecetarioDestinations.ADD_CHEF_RECIPE) {
+            composable(RecetarioDestinations.ADD_CHEF_RECIPE) { addRecipeEntry ->
+                val capturedPhotoPath by addRecipeEntry.savedStateHandle
+                    .getStateFlow<String?>("captured_photo_path", null)
+                    .collectAsState()
                 AddChefRecipeScreen(
                     onBack = { navController.popBackStack() },
-                    onSaved = { navController.popBackStack() }
+                    onSaved = { navController.popBackStack() },
+                    onTakePhoto = { navController.navigate(RecetarioDestinations.ADD_CHEF_RECIPE_CAMERA) },
+                    capturedPhotoPath = capturedPhotoPath,
+                    onCapturedPhotoConsumed = {
+                        addRecipeEntry.savedStateHandle.remove<String>("captured_photo_path")
+                    }
+                )
+            }
+            composable(RecetarioDestinations.ADD_CHEF_RECIPE_CAMERA) {
+                CameraScreen(
+                    onPhotoCaptured = { path ->
+                        navController.previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("captured_photo_path", path)
+                        navController.popBackStack()
+                    },
+                    onBack = { navController.popBackStack() }
                 )
             }
             composable(RecetarioDestinations.FAVORITES) {
                 FavoritesScreen(
                     onRecipeClick = { mealId -> navController.navigate(RecetarioDestinations.recipeDetail(mealId)) },
+                    onChefRecipeClick = { id -> navController.navigate(RecetarioDestinations.chefRecipeDetail(id)) },
                     onSettingsClick = { navController.navigate(RecetarioDestinations.SETTINGS) }
                 )
             }

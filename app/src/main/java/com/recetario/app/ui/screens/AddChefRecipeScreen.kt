@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -38,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -73,6 +75,9 @@ private data class IngredientField(val name: String = "", val quantity: String =
 fun AddChefRecipeScreen(
     onBack: () -> Unit,
     onSaved: () -> Unit,
+    onTakePhoto: () -> Unit,
+    capturedPhotoPath: String?,
+    onCapturedPhotoConsumed: () -> Unit,
     viewModel: AddChefRecipeViewModel = viewModel(factory = AppViewModelProvider.AddChefRecipeFactory)
 ) {
     val context = LocalContext.current
@@ -85,6 +90,13 @@ fun AddChefRecipeScreen(
     var imagePath by remember { mutableStateOf<String?>(null) }
     val ingredients = remember { mutableStateListOf(IngredientField()) }
     val steps = remember { mutableStateListOf("") }
+
+    LaunchedEffect(capturedPhotoPath) {
+        if (capturedPhotoPath != null) {
+            imagePath = capturedPhotoPath
+            onCapturedPhotoConsumed()
+        }
+    }
 
     val pickImageLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -160,6 +172,15 @@ fun AddChefRecipeScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
+            Button(
+                onClick = onTakePhoto,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Filled.PhotoCamera, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(if (imagePath != null) "Tomar otra foto" else "📷 Tomar foto con la cámara")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
             OutlinedButton(
                 onClick = {
                     pickImageLauncher.launch(
@@ -170,7 +191,7 @@ fun AddChefRecipeScreen(
             ) {
                 Icon(Icons.Filled.Image, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(if (imagePath != null) "Cambiar foto" else "Elegir foto de la galería")
+                Text(if (imagePath != null) "Cambiar foto" else "🖼 Elegir foto de la galería")
             }
 
             Spacer(modifier = Modifier.height(20.dp))
