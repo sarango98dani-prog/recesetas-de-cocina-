@@ -179,16 +179,13 @@ identidad).
 
 ## Capturas de pantalla
 
-_(Pendiente: agregar capturas de Splash, Home, Búsqueda, Detalle, Cámara,
-Catálogo de la Chef y Ajustes antes de la entrega final.)_
-
-| Splash / Home | Búsqueda | Detalle |
+| Pantalla de bienvenida | Búsqueda vacía | Resultado de búsqueda |
 |---|---|---|
-| _(captura)_ | _(captura)_ | _(captura)_ |
+| ![Pantalla de bienvenida](docs/screenshots/home.png) | ![Búsqueda vacía](docs/screenshots/busqueda_vacia.png) | ![Resultado de búsqueda](docs/screenshots/busqueda_resultado.png) |
 
-| Catálogo Chef | Cámara | Ajustes |
+| Catálogo Chef | Detalle receta | Ajustes |
 |---|---|---|
-| _(captura)_ | _(captura)_ | _(captura)_ |
+| ![Catálogo Chef](docs/screenshots/catalogo_chef.png) | ![Detalle receta](docs/screenshots/detalle_receta.png) | ![Ajustes](docs/screenshots/ajustes.png) |
 
 ## Diagrama de arquitectura
 
